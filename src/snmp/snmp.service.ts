@@ -5,7 +5,7 @@ import * as snmp from 'net-snmp';
 export class SnmpService {
   private readonly logger = new Logger(SnmpService.name);
   private session: snmp.Session;
-  private readonly target = '10.4.22.1'; // IP Mikrotik
+  private readonly target = '192.168.1.115'; // IP Mikrotik
   private readonly community = 'public';
   private readonly oid = '1.3.6.1.2.1.2.2.1.10.2'; // ifInOctets interface 2
 
