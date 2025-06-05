@@ -1,4 +1,4 @@
-import { Controller, Get } from '@nestjs/common';
+import { Controller, Get, Query } from '@nestjs/common';
 import { SnmpService } from './snmp.service';
 
 @Controller('snmp')
@@ -6,10 +6,14 @@ export class SnmpController {
   constructor(private readonly snmpService: SnmpService) {}
 
   @Get('trafego')
-  async getTrafego() {
-    const value = await this.snmpService.getIfInOctets();
+  async getTrafego(
+    @Query('rxPorta') rxPorta: string,
+    @Query('txPorta') txPorta: string,
+  ) {
+    console.log(`rxPorta: ${rxPorta}, txPorta: ${txPorta}`);
+    const values = await this.snmpService.getValues(rxPorta, txPorta);
     const time = new Date().toISOString();
-    return { time, bytes: value };
+    return { time, valores: values};
   }
 
   @Get('teste')
