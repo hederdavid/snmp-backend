@@ -2,97 +2,127 @@
   <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
 </p>
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+# SNMP Backend
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg" alt="Donate us"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow" alt="Follow us on Twitter"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+Este repositório contém o backend desenvolvido para o projeto de monitoramento de tráfego de rede, parte da disciplina **Projeto e Administração de Redes**, ministrada pelo professor **Igor Luiz Oliveira de Souza**. O backend é responsável por coletar dados SNMP de um roteador Mikrotik e disponibilizá-los para o frontend.
 
-## Description
+**Autores:** Heder Moreira David e Júlia Macêdo Galvão de Carvalho
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+## Objetivo
 
-## Project setup
+O objetivo deste backend é fornecer uma API que permita o monitoramento em tempo real do tráfego de rede de interfaces Ethernet de um roteador Mikrotik. Ele utiliza o protocolo SNMP para coletar informações como **Bytes Recebidos** e **Taxa de Transmissão**.
 
-```bash
-$ npm install
+## Tecnologias Utilizadas
+
+- **Framework:** NestJS
+- **Protocolo:** SNMP (via biblioteca `net-snmp`)
+- **Linguagem:** TypeScript
+- **Outras Dependências:** RxJS, Cors
+
+## Funcionalidades
+
+- Coleta de dados SNMP em tempo real.
+- Endpoints para consulta de tráfego de rede por interface.
+- Logs detalhados para monitoramento e depuração.
+- Suporte a CORS para integração com o frontend.
+
+## Endpoints Disponíveis
+
+### `GET /snmp/trafego`
+
+Retorna os valores de tráfego de uma interface específica.
+
+**Parâmetros de Query:**
+
+- `rxPorta` (string): Número da porta para leitura de bytes recebidos.
+- `txPorta` (string): Número da porta para leitura de bytes transmitidos.
+
+**Exemplo de Resposta:**
+
+```json
+{
+  "time": "2025-06-12T14:00:00.000Z",
+  "valores": {
+    "rxBytes": 123456,
+    "txBytes": 654321
+  }
+}
 ```
 
-## Compile and run the project
+### `GET /snmp/teste`
 
-```bash
-# development
-$ npm run start
+Retorna um valor aleatório para simulação de tráfego.
 
-# watch mode
-$ npm run start:dev
+**Exemplo de Resposta:**
 
-# production mode
-$ npm run start:prod
+```json
+{
+  "time": "2025-06-12T14:00:00.000Z",
+  "bytes": 7890
+}
 ```
 
-## Run tests
+## Configuração do Projeto
 
-```bash
-# unit tests
-$ npm run test
+### Pré-requisitos
 
-# e2e tests
-$ npm run test:e2e
+- Node.js (versão 16 ou superior)
+- NPM ou Yarn
+- Roteador Mikrotik configurado com SNMP habilitado
 
-# test coverage
-$ npm run test:cov
+### Instalação
+
+1. Clone este repositório:
+
+   ```sh
+   git clone https://github.com/hederdavid/snmp-backend.git
+   cd snmp-backend
+   ```
+
+2. Instale as dependências:
+
+   ```sh
+   npm install
+   ```
+
+3. Configure o endereço IP e a comunidade SNMP no arquivo `src/snmp/snmp.service.ts`:
+
+   ```typescript
+   private readonly target = '10.4.22.200'; // IP do roteador Mikrotik
+   private readonly community = 'public';  // Comunidade SNMP
+   ```
+
+4. Inicie o servidor de desenvolvimento:
+
+   ```sh
+   npm run start:dev
+   ```
+
+## Estrutura do Projeto
+
+```plaintext
+snmp-backend/
+├── src/
+│   ├── snmp/             # Módulo SNMP
+│   │   ├── snmp.service.ts  # Serviço para comunicação SNMP
+│   │   ├── snmp.controller.ts # Controlador dos endpoints
+│   │   └── snmp.module.ts    # Módulo SNMP
+│   ├── app.module.ts     # Módulo principal
+│   ├── main.ts           # Arquivo principal
+├── dist/                 # Arquivos compilados
+├── package.json          # Configuração do projeto
+├── tsconfig.json         # Configuração do TypeScript
+└── README.md             # Documentação do projeto
 ```
 
-## Deployment
+## Integração com o Frontend
 
-When you're ready to deploy your NestJS application to production, there are some key steps you can take to ensure it runs as efficiently as possible. Check out the [deployment documentation](https://docs.nestjs.com/deployment) for more information.
+O frontend deste projeto está disponível no repositório [Gráfico de Tráfego de Rede](https://github.com/hederdavid/grafico-trafego). Ele consome os dados fornecidos por este backend para exibir gráficos interativos de tráfego de rede.
 
-If you are looking for a cloud-based platform to deploy your NestJS application, check out [Mau](https://mau.nestjs.com), our official platform for deploying NestJS applications on AWS. Mau makes deployment straightforward and fast, requiring just a few simple steps:
+## Apresentação
 
-```bash
-$ npm install -g @nestjs/mau
-$ mau deploy
-```
+Durante a apresentação, será demonstrado o funcionamento do backend ao monitorar o tráfego de rede em tempo real, utilizando o **Bandwidth Test** do roteador Mikrotik.
 
-With Mau, you can deploy your application in just a few clicks, allowing you to focus on building features rather than managing infrastructure.
+## Licença
 
-## Resources
-
-Check out a few resources that may come in handy when working with NestJS:
-
-- Visit the [NestJS Documentation](https://docs.nestjs.com) to learn more about the framework.
-- For questions and support, please visit our [Discord channel](https://discord.gg/G7Qnnhy).
-- To dive deeper and get more hands-on experience, check out our official video [courses](https://courses.nestjs.com/).
-- Deploy your application to AWS with the help of [NestJS Mau](https://mau.nestjs.com) in just a few clicks.
-- Visualize your application graph and interact with the NestJS application in real-time using [NestJS Devtools](https://devtools.nestjs.com).
-- Need help with your project (part-time to full-time)? Check out our official [enterprise support](https://enterprise.nestjs.com).
-- To stay in the loop and get updates, follow us on [X](https://x.com/nestframework) and [LinkedIn](https://linkedin.com/company/nestjs).
-- Looking for a job, or have a job to offer? Check out our official [Jobs board](https://jobs.nestjs.com).
-
-## Support
-
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
-
-## Stay in touch
-
-- Author - [Kamil Myśliwiec](https://twitter.com/kammysliwiec)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
-
-## License
-
-Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
+Este projeto é de uso acadêmico e não possui uma licença específica.
